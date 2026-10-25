@@ -41,7 +41,7 @@
 
 ## Kitchen dashboard
 
-<sub>Public activity only, rebuilt every day by a GitHub Action.</sub>
+<sub>Same numbers as my contribution graph, rebuilt every day by a GitHub Action.</sub>
 
 <p align="center">
   <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dash/profile-dark.svg"><img alt="Profile summary: contributions in the last year and public repositories" src="assets/dash/profile-light.svg" width="410"></picture>
