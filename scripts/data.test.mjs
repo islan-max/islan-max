@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { streaks, langShares } from './build.mjs';
+import { streaks, langShares } from './data.mjs';
 
 const d = (...c) => c.map((n, i) => [`2026-01-${String(i + 1).padStart(2, '0')}`, n]);
 
