@@ -1,4 +1,4 @@
-// Gera as 8 imagens do README (4 partes x claro/escuro) em assets/.
+// Gera as imagens do README (9 partes x claro/escuro) em assets/.
 import { mkdir, writeFile } from 'node:fs/promises';
 import { collect } from './data.mjs';
 import { render } from './art/scenes.mjs';

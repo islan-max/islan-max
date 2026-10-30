@@ -10,10 +10,10 @@ const D = {
   repos: [{ name: 'caderno-de-estudos', commits: 40, prs: 4 }, { name: 'trevo', commits: 20, prs: 2 }, { name: 'polar', commits: 15, prs: 1 }, { name: 'farol', commits: 9, prs: 0 }, { name: 'encaixe', commits: 5, prs: 0 }],
 };
 
-test('render: 4 SVGs por tema, válidos, sem NaN e leves', () => {
+test('render: 9 SVGs por tema, válidos, sem NaN e leves', () => {
   for (const theme of ['light', 'dark']) {
     const r = render(theme, D);
-    assert.deepEqual(Object.keys(r), ['hero', 'repos', 'grafico', 'numeros']);
+    assert.deepEqual(Object.keys(r), ['hero', 'projetos', 'caderno', 'gastos', 'polar', 'farol', 'encaixe', 'grafico', 'numeros']);
     for (const [part, svg] of Object.entries(r)) {
       assert.match(svg, /^<svg[\s>]/, part);
       assert.doesNotMatch(svg, /NaN|undefined/, part);

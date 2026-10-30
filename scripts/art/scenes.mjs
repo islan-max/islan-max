@@ -148,67 +148,93 @@ function header(c, glyph, title, sub) {
   return `<g style="${c.enter(0.1, 0.8)}"><g transform="translate(8 6) rotate(-3 17 17)"><rect width="34" height="34" rx="3" fill="${P.accent}"/><path d="${g.d}" fill="${P.canvas}"/></g><path d="${t.d}" fill="${P.line}"/><text x="58" y="48" font-size="12.5" fill="${P.line2}" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif">${esc(sub)}</text><path d="M${f(58 + t.width + 14)} 22H792" stroke="${P.border}" stroke-width="1.2"/></g><g transform="translate(0 ${HDR})">`;
 }
 
-/* ------------------------------ 2. repositories (manga) ------------------------------ */
+/* ------------------------------ 2. projects (manga page, one image per panel) ------------------------------ */
 
-function repos(theme, D) {
-  const order = ['caderno', 'diário de gastos', 'polar', 'farol', 'encaixe'];
+// The five panels tile an 800x604 page, so each one can be its own clickable image in the README.
+// Neighbouring panels are separated by a slanted gutter whose width equals the slant, which is what lets the bounding boxes butt together.
+const PAGE = {
+  caderno: { box: [0, 0, 530, 262], poly: [[0, 0], [530, 0], [516, 262], [0, 262]] },
+  gastos: { box: [530, 0, 800, 262], poly: [[544, 0], [800, 0], [800, 262], [530, 262]] },
+  polar: { box: [0, 274, 290, 604], poly: [[0, 274], [290, 274], [276, 604], [0, 604]] },
+  farol: { box: [290, 274, 566, 604], poly: [[304, 274], [566, 274], [552, 604], [290, 604]] },
+  encaixe: { box: [566, 274, 800, 604], poly: [[580, 274], [800, 274], [800, 604], [566, 604]] },
+};
+const ROW_GAP = 8; // transparent strip under the first row, in addition to the line gap between rows
+const LABEL = { caderno: 'caderno', gastos: 'diário de gastos', polar: 'polar', farol: 'farol', encaixe: 'encaixe' };
+const ABOUT = {
+  caderno: 'uma katana cravada na colina, entre capim ao vento e aves.',
+  gastos: 'moedas e uma balança do tempo de Vagabond: ryō, bu, shu, mon e monme.',
+  polar: 'a constelação da Ursa Menor, com zoom na estrela polar.',
+  farol: 'lanternas de mão, chōchin e gandō, na noite.',
+  encaixe: 'um quadro de horários de dojo, onde uma etiqueta encaixa no horário livre.',
+};
+
+const PANEL_BODY = {
+  caderno(c, theme, caption) {
+    const P = c.P, hatchHill = hatch(c, { gap: 4, w: 0.8, color: P.onMass, angle: -35 });
+    katanaDef(c, 'kat');
+    // three depths of ground, each with its own grass
+    const yBack = chainY([0, 178], [[[130, 150], [270, 188]], [[410, 226], [530, 170]]]), yMid = chainY([0, 196], [[[110, 168], [240, 204]], [[370, 240], [530, 186]]]), yFront = chainY([0, 240], [[[90, 226], [200, 240]], [[310, 254], [400, 236]], [[490, 218], [540, 232]]]);
+    const T = theme === 'dark' ? { back: TONES.dark.ridge[4], mid: TONES.dark.ridge[2], front: '#010409' } : { back: TONES.light.tree[0], mid: '#59636e', front: '#1f2328' };
+    const gBack = 'M0 262V178Q130 150 270 188T530 170V262Z', gMid = 'M0 262V196Q110 168 240 204T530 186V262Z', gFront = 'M0 262V240Q90 226 200 240T400 236T540 232V262Z';
+    return panel(c, PAGE.caderno.poly, P.panelBg, [
+      toneFade(c, 0, 0, 530, 150, 'down', { gap: 6, r: 1.8, op: 0.7 }),
+      `<path d="${gBack}" fill="${T.back}"/>`,
+      grass(yBack, { gap: 5, h: [8, 15], w: 1.5, tone: T.back, seed: 21, dur: 5.6, amp: 2 }),
+      useKatana('kat', 300, 98, 104, 0.64),
+      `<path d="${gMid}" fill="${T.mid}"/><path d="${gMid}" fill="url(#${hatchHill})" opacity=".35"/>`,
+      grass(yMid, { gap: 6, h: [13, 26], w: 2, tone: T.mid, seed: 22, dur: 4.4, amp: 3.5 }),
+      `<path d="${gFront}" fill="${T.front}"/>`,
+      grass(yFront, { gap: 7, h: [22, 40], w: 2.7, tone: T.front, seed: 23, dur: 3.5, amp: 5 }),
+      `<g class="cf" style="--x0:40px;--y0:56px;--x1:150px;--y1:36px;--x2:240px;--y2:70px;--t:13s;transform:translate(150px,36px)">${crow(c, 0, 0, 1, { fill: P.line })}</g>`,
+      `<g class="cf" style="--x0:330px;--y0:90px;--x1:420px;--y1:60px;--x2:500px;--y2:96px;--t:17s;transform:translate(420px,60px)">${crow(c, 0, 0, 0.7, { flip: true, delay: 0.3, fill: P.line })}</g>`,
+      sfx(c, 'ドン', 430, 200, 66, { rot: -6, halo: P.panelBg }),
+    ].join(''), 0.1, -50) + caption(20, 236, 0.9);
+  },
+  gastos(c, theme, caption) {
+    const P = c.P;
+    return panel(c, PAGE.gastos.poly, P.panelBg, [
+      toneFade(c, 512, 0, 288, 200, 'down', { gap: 5, r: 1.9, op: 0.7 }),
+      gastosBody(c),
+      sfx(c, 'チャリン', 668, 40, 28, { rot: -6, halo: P.panelBg }),
+    ].join(''), 0.25, 50) + caption(572, 238, 1.0);
+  },
+  polar(c, theme, caption) {
+    const P = c.P, names = text('estrela polar', 20, 298, 13);
+    return panel(c, PAGE.polar.poly, P.panelDark, [
+      polarBody(c).body,
+      `<path d="${names.d}" fill="${P.onDark}" opacity=".85"/>`,
+      sfx(c, 'ピカッ', 214, 330, 32, { rot: 8, halo: P.panelDark }),
+    ].join(''), 0.4, -50) + caption(20, 580, 1.1);
+  },
+  farol(c, theme, caption) {
+    const P = c.P;
+    return panel(c, PAGE.farol.poly, P.panelDark, [farolBody(c), sfx(c, 'キラ', 506, 338, 34, { rot: 10, halo: P.panelDark })].join(''), 0.55, 50) + caption(302, 580, 1.2);
+  },
+  encaixe(c, theme, caption) {
+    const P = c.P;
+    return panel(c, PAGE.encaixe.poly, P.panelBg, [toneFade(c, 560, 274, 240, 120, 'down', { gap: 6, r: 1.5, op: 0.5 }), encaixeBody(c), sfx(c, 'カチッ', 690, 306, 30, { rot: -6, halo: P.panelBg })].join(''), 0.7, 50) + caption(636, 580, 1.3);
+  },
+};
+
+/** One panel of the page as its own image, drawn in page coordinates and cropped to its bounding box. */
+function panelImage(theme, D, key) {
+  const [x0, y0, x1, y1] = PAGE[key].box, label = LABEL[key];
   const by = Object.fromEntries(D.repos.map((r) => [NAME[r.name] ?? r.name, r]));
-  const H = 604;
-  const c = new Ctx(theme, 800, H + HDR, `Página de mangá com um painel por repositório: ${order.map((n) => `${n} (${by[n]?.commits ?? '?'} commits)`).join(', ')}.`, O);
-  const P = c.P;
+  const commits = by[label]?.commits ?? '';
+  const c = new Ctx(theme, x1 - x0, y1 - y0 + (y0 === 0 ? ROW_GAP : 0), `${label}${commits === '' ? '' : `, ${commits} commits`}: ${ABOUT[key]}`, { ...O, rx: 0, frame: false });
   common(c);
-  c.add(header(c, '作', 'Projetos', 'um painel por repositório'));
-  const hatchHill = hatch(c, { gap: 4, w: 0.8, color: P.onMass, angle: -35 });
-  katanaDef(c, 'kat');
+  c.add(`<g transform="translate(${-x0} ${-y0})">`);
+  c.add(PANEL_BODY[key](c, theme, (x, y, delay) => caption(c, label, commits, x, y, delay)));
+  c.add('</g>');
+  return c.out();
+}
 
-  // 1. caderno: sword planted in a hill, crows; three depths of ground, each with its own grass
-  const yBack = chainY([0, 178], [[[130, 150], [270, 188]], [[410, 226], [530, 170]]]), yMid = chainY([0, 196], [[[110, 168], [240, 204]], [[370, 240], [530, 186]]]), yFront = chainY([0, 240], [[[90, 226], [200, 240]], [[310, 254], [400, 236]], [[490, 218], [540, 232]]]);
-  const T = theme === 'dark' ? { back: TONES.dark.ridge[4], mid: TONES.dark.ridge[2], front: '#010409' } : { back: TONES.light.tree[0], mid: '#59636e', front: '#1f2328' };
-  const gBack = 'M0 262V178Q130 150 270 188T530 170V262Z', gMid = 'M0 262V196Q110 168 240 204T530 186V262Z', gFront = 'M0 262V240Q90 226 200 240T400 236T540 232V262Z';
-  const p1 = [[0, 0], [530, 0], [500, 262], [0, 262]];
-  c.add(panel(c, p1, P.panelBg, [
-    toneFade(c, 0, 0, 530, 150, 'down', { gap: 6, r: 1.8, op: 0.7 }),
-    `<path d="${gBack}" fill="${T.back}"/>`,
-    grass(yBack, { gap: 5, h: [8, 15], w: 1.5, tone: T.back, seed: 21, dur: 5.6, amp: 2 }),
-    useKatana('kat', 300, 98, 104, 0.64),
-    `<path d="${gMid}" fill="${T.mid}"/><path d="${gMid}" fill="url(#${hatchHill})" opacity=".35"/>`,
-    grass(yMid, { gap: 6, h: [13, 26], w: 2, tone: T.mid, seed: 22, dur: 4.4, amp: 3.5 }),
-    `<path d="${gFront}" fill="${T.front}"/>`,
-    grass(yFront, { gap: 7, h: [22, 40], w: 2.7, tone: T.front, seed: 23, dur: 3.5, amp: 5 }),
-    `<g class="cf" style="--x0:40px;--y0:56px;--x1:150px;--y1:36px;--x2:240px;--y2:70px;--t:13s;transform:translate(150px,36px)">${crow(c, 0, 0, 1, { fill: P.line })}</g>`,
-    `<g class="cf" style="--x0:330px;--y0:90px;--x1:420px;--y1:60px;--x2:500px;--y2:96px;--t:17s;transform:translate(420px,60px)">${crow(c, 0, 0, 0.7, { flip: true, delay: 0.3, fill: P.line })}</g>`,
-    sfx(c, 'ドン', 430, 200, 66, { rot: -6, halo: P.panelBg }),
-  ].join(''), 0.1, -50));
-  c.add(caption(c, 'caderno', by.caderno?.commits ?? '', 20, 236, 0.9));
-
-  // 2. diário de gastos: cosmos under a screentone sky
-  const p2 = [[542, 0], [800, 0], [800, 262], [512, 262]];
-  c.add(panel(c, p2, P.panelBg, [
-    toneFade(c, 512, 0, 288, 200, 'down', { gap: 5, r: 1.9, op: 0.7 }),
-    gastosBody(c),
-    sfx(c, 'チャリン', 668, 40, 28, { rot: -6, halo: P.panelBg }),
-  ].join(''), 0.25, 50));
-  c.add(caption(c, 'diário de gastos', by['diário de gastos']?.commits ?? '', 572, 238, 1.0));
-
-  // 3. polar: Ursa Minor, zooming into Polaris
-  const p3 = [[0, 274], [290, 274], [262, 604], [0, 604]];
-  const names = text('estrela polar', 20, 298, 13);
-  c.add(panel(c, p3, P.panelDark, [
-    polarBody(c).body,
-    `<path d="${names.d}" fill="${P.onDark}" opacity=".85"/>`,
-    sfx(c, 'ピカッ', 214, 330, 32, { rot: 8, halo: P.panelDark }),
-  ].join(''), 0.4, -50));
-  c.add(caption(c, 'polar', by.polar?.commits ?? '', 20, 580, 1.1));
-
-  // 4. farol: hand lanterns, chōchin and gandō
-  const p4 = [[302, 274], [566, 274], [538, 604], [274, 604]];
-  c.add(panel(c, p4, P.panelDark, [farolBody(c), sfx(c, 'キラ', 506, 338, 34, { rot: 10, halo: P.panelDark })].join(''), 0.55, 50));
-  c.add(caption(c, 'farol', by.farol?.commits ?? '', 292, 580, 1.2));
-
-  // 5. encaixe: a dojo booking board, a name tag slides into the free slot and gets its seal
-  const p5 = [[578, 274], [800, 274], [800, 604], [550, 604]];
-  c.add(panel(c, p5, P.panelBg, [toneFade(c, 540, 274, 260, 120, 'down', { gap: 6, r: 1.5, op: 0.5 }), encaixeBody(c), sfx(c, 'カチッ', 690, 306, 30, { rot: -6, halo: P.panelBg })].join(''), 0.7, 50));
-  c.add(caption(c, 'encaixe', by.encaixe?.commits ?? '', 636, 580, 1.3));
+/** Title strip above the panels. */
+function projetos(theme) {
+  const c = new Ctx(theme, 800, HDR, 'Projetos: um painel por repositório', { ...O, rx: 0, frame: false });
+  common(c);
+  c.add(header(c, '作', 'Projetos', 'um painel por repositório, clique para abrir'));
   c.add('</g>');
   return c.out();
 }
@@ -310,5 +336,6 @@ function numeros(theme, D) {
 export function render(theme, D) {
   const need = [...'diário de gastosestrela polarゴピカッチャリンカチキラドン'].filter((ch) => font.charToGlyphIndex(ch) === 0);
   if (need.length) throw new Error('glyphs missing: ' + need.join(''));
-  return { hero: hero(theme, D), repos: repos(theme, D), grafico: grafico(theme, D), numeros: numeros(theme, D) };
+  const panels = Object.fromEntries(Object.keys(PAGE).map((k) => [k, panelImage(theme, D, k)]));
+  return { hero: hero(theme, D), projetos: projetos(theme), ...panels, grafico: grafico(theme, D), numeros: numeros(theme, D) };
 }

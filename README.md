@@ -6,18 +6,9 @@
 </p>
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/repos-dark.svg">
-    <img alt="Projetos: um painel de mangá por repositório (caderno, diário de gastos, polar, farol e encaixe), com o número de commits de cada um." src="assets/repos-light.svg" width="100%">
-  </picture>
-</p>
-
-<p align="center">
-  <a href="https://github.com/islan-max/caderno-de-estudos">caderno</a> ·
-  <a href="https://github.com/islan-max/trevo">diário de gastos</a> ·
-  <a href="https://github.com/Origenes-System-Develop/polar">polar</a> ·
-  <a href="https://github.com/islan-max/farol">farol</a> ·
-  <a href="https://github.com/islan-max/encaixe">encaixe</a>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="assets/projetos-dark.svg"><img alt="Projetos: um painel por repositório" src="assets/projetos-light.svg" width="100%"></picture><br>
+  <a href="https://github.com/islan-max/caderno-de-estudos"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/caderno-dark.svg"><img alt="caderno: abrir o repositório" src="assets/caderno-light.svg" width="66.1%"></picture></a><a href="https://github.com/islan-max/trevo"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/gastos-dark.svg"><img alt="diário de gastos: abrir o repositório" src="assets/gastos-light.svg" width="33.7%"></picture></a><br>
+  <a href="https://github.com/Origenes-System-Develop/polar"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/polar-dark.svg"><img alt="polar: abrir o repositório" src="assets/polar-light.svg" width="36.1%"></picture></a><a href="https://github.com/islan-max/farol"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/farol-dark.svg"><img alt="farol: abrir o repositório" src="assets/farol-light.svg" width="34.3%"></picture></a><a href="https://github.com/islan-max/encaixe"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/encaixe-dark.svg"><img alt="encaixe: abrir o repositório" src="assets/encaixe-light.svg" width="29.1%"></picture></a>
 </p>
 
 <p align="center">
@@ -33,5 +24,3 @@
     <img alt="Em números: total de contribuições, sequência de dias e linguagens mais usadas." src="assets/numeros-light.svg" width="100%">
   </picture>
 </p>
-
-<p align="center"><sub>As imagens são geradas por <a href="scripts/build.mjs">scripts/build.mjs</a> todo dia, a partir dos dados públicos do perfil (contribuições privadas entram só como número).</sub></p>
