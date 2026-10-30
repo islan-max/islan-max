@@ -1,0 +1,14 @@
+{
+  "name": "islan-max-profile",
+  "private": true,
+  "type": "module",
+  "description": "Gera as imagens (SVG com animação em CSS) do README do perfil",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test scripts/data.test.mjs scripts/art.test.mjs"
+  },
+  "dependencies": {
+    "opentype.js": "^2.0.0",
+    "perfect-freehand": "^1.2.3"
+  }
+}

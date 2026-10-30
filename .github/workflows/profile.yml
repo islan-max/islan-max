@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [scripts/**, .github/workflows/profile.yml]
+    paths: [scripts/**, package*.json, .github/workflows/profile.yml]
 
 permissions:
   contents: write
@@ -23,21 +23,15 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+          cache: npm
 
-      - run: node --test scripts/build.test.mjs
+      - run: npm ci
+      - run: npm test
 
-      - name: Dashboard cards
-        run: node scripts/build.mjs dash
+      - name: Gerar imagens
+        run: npm run build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Snake
-        uses: Platane/snk/svg-only@v3
-        with:
-          github_user_name: ${{ github.repository_owner }}
-          outputs: |
-            assets/snake-light.svg?palette=github
-            assets/snake-dark.svg?palette=github-dark
 
       - name: Commit changes
         run: |
